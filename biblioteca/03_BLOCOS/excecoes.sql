@@ -30,13 +30,21 @@ EXCEPTION
     DBMS_OUTPUT.PUT_LINE('ERRO: Múltiplos registros encontrados. ');
 
     WHEN e_livro_indisponivel THEN
-    DBMS_OUTPUT.PUT_LINE('AVISO !  '|| SQLERRM); --SQLERRM -- explicação ->
+    -- SQLERRM é uma função que retorna a mensagem de erro mais recente
+    -- Usado para exibir o texto do erro capturado na exceção
+    -- Útil para logging e feedback ao usuário sobre o que deu errado
+    DBMS_OUTPUT.PUT_LINE('AVISO !  '|| SQLERRM);
 
     WHEN OTHERS THEN 
+    -- Captura qualquer outra exceção não tratada explicitamente acima
+    -- Útil como fallback geral para casos inesperados
     DBMS_OUTPUT.PUT_LINE('ERRO inesperado: ' || SQLERRM);
     DBMS_OUTPUT.PUT_LINE('Código: ' || SQLERRM);
 
-    RAISE; -- relança para o chamador?
+    -- RAISE sem argumentos relança a mesma exceção para o programa chamador
+    -- Permite que o erro seja tratado em nível superior (se necessário)
+    -- Importante para propagação de erros críticos
+    RAISE;
 
 END;
 /

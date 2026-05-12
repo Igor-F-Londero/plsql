@@ -29,9 +29,14 @@ END;
 /
 
 -- cursor FOR (mais simples - abre, faz fetch e fecha )
+-- O cursor FOR permite executar uma SELECT diretamente dentro do FOR LOOP
+-- A variável "rec" recebe automaticamente cada linha retornada pela SELECT
+-- Não precisa OPEN, FETCH ou CLOSE - o PL/SQL gerencia tudo automaticamente
 
 BEGIN
-    FOR rec IN (SELECT titulo, ano FROM livros ORDER BY ano) LOOP  -- explicação -> select dentro de for?
+    FOR rec IN (SELECT titulo, ano FROM livros ORDER BY ano) LOOP
+        -- "rec" é um registro que contém os campos: titulo, ano
+        -- A cada iteração, rec recebe a próxima linha da query
         DBMS_OUTPUT.PUT_LINE(rec.titulo || '( ' || rec.ano || ' )');
     END LOOP;
 END;

@@ -7,7 +7,11 @@ CREATE OR REPLACE FUNCTION calcular_multa(
     v_dias_atraso NUMBER;
 
 BEGIN
-    SELECT data_prevista, NVL(data_retorno, SYSDATE) --explicação -->
+    -- NVL(data_retorno, SYSDATE) verifica se a data_retorno é NULL
+    -- Se for NULL (livro ainda não devolvido), usa a data de hoje (SYSDATE)
+    -- Se não for NULL, usa o valor real da coluna
+    -- Isso permite calcular multa baseado em atraso até hoje se o livro não foi devolvido
+    SELECT data_prevista, NVL(data_retorno, SYSDATE)
     INTO v_prevista, v_retorno
     FROM emprestimos WHERE id_emprestimo = p_id_emprestimo;
 

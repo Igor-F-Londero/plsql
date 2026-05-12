@@ -10,7 +10,10 @@ BEGIN
 
     SELECT disponivel INTO v_disponivel
     FROM livros WHERE id_livro = p_id_livro
-    FOR UPDATE; -- explicação -> for update?
+    -- FOR UPDATE bloqueia a linha selecionada até o fim da transação
+    -- Evita que outro usuário atualize o mesmo livro simultaneamente
+    -- Garante consistência: quando mudamos o status, sabemos que ninguém alterou em paralelo
+    FOR UPDATE;
 
     IF v_disponivel = 'N' THEN
     RAISE_APPLICATION_ERROR(-20001, 'Livro Indisponível.');
@@ -33,7 +36,10 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Empréstimo #' || p_id_emp || ' registrado');
 
 EXCEPTION
-    WHEN OTHERS THEN --explicação
+    -- WHEN OTHERS captura qualquer erro não previsto anteriormente
+    -- ROLLBACK desfaz todas as operações (INSERT, UPDATE) da transação em caso de erro
+    -- RAISE relança o erro para que o programa chamador saiba que falhou
+    WHEN OTHERS THEN
         ROLLBACK; 
         RAISE;
 END registrar_emprestimo;-- até aqui

@@ -15,7 +15,7 @@ CREATE TABLE membros(
     data_cadastro DATE DEFAULT SYSDATE
 );
 
-CRATE TABLE emprestimos (
+CREATE TABLE emprestimos (
     id_emprestimo NUMBER PRIMARY KEY,
     id_livro NUMBER REFERENCES livros(id_livro),
     id_membro NUMBER REFERENCES membros(id_membro),
@@ -33,7 +33,7 @@ DECLARE
 
 BEGIN
     v_msg :='Biblioteca criada com sucesso! ';
-    DBMS_OUTPUT.PUT_LINE(v_msg)
+    DBMS_OUTPUT.PUT_LINE(v_msg);
     DBMS_OUTPUT.PUT_LINE('Data atual: ' || TO_CHAR(SYSDATE, 'DD/MM/YYYY'));
 
 END;

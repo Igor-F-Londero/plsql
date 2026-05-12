@@ -30,7 +30,7 @@ EXCEPTION
     DBMS_OUTPUT.PUT_LINE('ERRO: Múltiplos registros encontrados. ');
 
     WHEN e_livro_indisponivel THEN
-    DBMS_OUTPUT.PUT_LINE('AVISO !  '|| SQLERRM); --SQLERRM??
+    DBMS_OUTPUT.PUT_LINE('AVISO !  '|| SQLERRM); --SQLERRM -- explicação ->
 
     WHEN OTHERS THEN 
     DBMS_OUTPUT.PUT_LINE('ERRO inesperado: ' || SQLERRM);
@@ -41,4 +41,4 @@ EXCEPTION
 END;
 /
 
-  
+

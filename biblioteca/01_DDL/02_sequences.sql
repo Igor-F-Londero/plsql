@@ -1,0 +1,5 @@
+-- Sequences para geração automática de IDs
+
+CREATE SEQUENCE seq_livros START WITH 4 INCREMENT BY 1;
+CREATE SEQUENCE seq_membros START WITH 3 INCREMENT BY 1;
+CREATE SEQUENCE seq_emprestimos START WITH 1 INCREMENT BY 1;

@@ -31,7 +31,7 @@ END;
 -- cursor FOR (mais simples - abre, faz fetch e fecha )
 
 BEGIN
-    FOR rec IN (SELECT titulo, ano FROM livros ORDER BY ano) LOOP
+    FOR rec IN (SELECT titulo, ano FROM livros ORDER BY ano) LOOP  -- explicação -> select dentro de for?
         DBMS_OUTPUT.PUT_LINE(rec.titulo || '( ' || rec.ano || ' )');
     END LOOP;
 END;

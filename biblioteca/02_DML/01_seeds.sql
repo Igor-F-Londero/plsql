@@ -24,15 +24,15 @@ BEGIN
 
     --IF/ELSIF/ELSE
 
-    IF v_disponivel = '5' THEN
-        v_status := "Disponivel para empréstimo";
+    IF v_disponivel = 'S' THEN
+        v_status := 'Disponivel para empréstimo';
     ELSIF v_disponivel = 'N' THEN
         v_status :='Emprestado no momento';
     ELSE
     v_status := 'Desconhecido';
     END IF;
 
-    DBMS_OUTPUT.PUT_LINE('Libro: '|| v_titulo);
+    DBMS_OUTPUT.PUT_LINE('Livro: '|| v_titulo);
     DBMS_OUTPUT.PUT_LINE('Status '|| v_status);
 
     DBMS_OUTPUT.PUT_LINE(

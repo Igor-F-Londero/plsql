@@ -1,0 +1,1 @@
+-- A query mais básica: junta PEDIDOS com CLIENTES para mostrar quem fez cada pedido

@@ -1,9 +1,10 @@
+--Departamentos = (#Código do departamento, nome)
 CREATE TABLE Departamento(
     cod_dep NUMBER PRIMARY KEY,
     nome    VARCHAR(100) NOT NULL
 
 );
-
+--Projetos = (#Código do projeto, nome, duração)
 CREATE TABLE Projetos(
     cod_proj NUMBER PRIMARY KEY,
     nome     VARCHAR(100) NOT NULL,
@@ -14,7 +15,7 @@ CREATE TABLE Projetos(
 
 );
 
-
+--Funcionários = (#Código do funcionário, nome, @código do departamento, numeroProjetos, numeroDependentes)
 CREATE TABLE Funcionarios(
     cod_func NUMBER PRIMARY KEY,
     nome     VARCHAR(100) NOT NULL,
@@ -33,7 +34,7 @@ CREATE TABLE Funcionarios(
         CHECK (numero_dep >= 0)
 
 );
-
+--Dependentes = (#Código do dependente, nome, @Código do funcionário)
 CREATE TABLE Dependentes(
     cod_depen NUMBER PRIMARY KEY,
     nome      VARCHAR2(100) NOT NULL,
@@ -44,7 +45,7 @@ CREATE TABLE Dependentes(
     REFERENCES Funcionarios (cod_func)
 );
 
-
+--FuncionáriosProjetos = (@#Código do funcionário, @#Código do projeto, horas alocadas)
 CREATE TABLE FuncionariosProjetos(
     cod_func_r NUMBER NOT NULL,
     cod_proj_r  NUMBER NOT NULL,
@@ -101,7 +102,7 @@ IS
 
     INSERT INTO Projetos(cod_proj,nome,duracao)VALUES (seq_proj.NEXTVAL,p_nome,p_duracao);
  END;
- /
+/
 
 --b) incluiFuncionario (nome, codigodepartamento)
 CREATE OR REPLACE PROCEDURE incluirFuncionario(
@@ -122,7 +123,7 @@ IS
     VALUES (seq_func.NEXTVAL,p_nome,p_cod_dep_r,0,0);
 
  END;
- /
+/
 
 
 -- c) incluiDependente (nome, codigoFuncionario)

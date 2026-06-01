@@ -188,9 +188,9 @@ END;
 
 ---
 
-##  Conceitos Educacionais
+##  Conceitos Estudados
 
-Este projeto demonstra:
+
 
 - **Modelagem Relacional**: Tabelas, chaves primárias, chaves estrangeiras
 - **Integridade de Dados**: Constraints e validações

@@ -167,7 +167,7 @@ IS
 
     SELECT COUNT(*) INTO v_existe_func FROM Funcionarios WHERE cod_func = p_cod_func;
 
-    IF v_existe_func = 0 THEN
+    IF v_existe_func <= 0 THEN
         RAISE_APPLICATION_ERROR(-20005, 'Funcionario informado não existe');
     END IF;
     -- verifica se projeto existe
@@ -196,6 +196,21 @@ IS
 END;
 /
 
+CREATE OR REPLACE PROCEDURE incluiDepartamento(
+    p_cod_dep IN Departamento.cod_dep%TYPE,
+    p_nome in Departamento.nome%TYPE
+    )IS
+    v_existe NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_existe FROM Departamento WHERE cod_dep = p_cod_dep;
+
+    IF v_existe > 0 THEN
+        RAISE_APPLICATION_ERROR(-20012,'Departamento já existe');
+    END IF;
+
+    INSERT INTO Departamento(cod_dep,nome)VALUES(p_cod_dep,p_nome);
+END;
+/
 --funções
 
 
@@ -272,3 +287,64 @@ IS
     RETURN v_numero_projetos;
  END;
 /
+
+--inserts
+-- Departamentos (
+BEGIN incluiDepartamento(seq_dep.NEXTVAL,'TI'); END;
+/
+BEGIN incluiDepartamento(seq_dep.NEXTVAL,'Vendas'); END;
+/
+BEGIN incluiDepartamento(seq_dep.NEXTVAL,'RH'); END;
+/
+BEGIN incluiDepartamento(seq_dep.NEXTVAL,'Financeiro'); END;
+/
+
+-- Projetos
+BEGIN incluirProjeto('ERP Corporativo', 12); END;
+/
+BEGIN incluirProjeto('Portal de Vendas', 8); END;
+/
+BEGIN incluirProjeto('People Analytics', 6); END;
+/
+BEGIN incluirProjeto('BI Financeiro', 10); END;
+/
+
+-- Funcionários (considerando departamentos 1..4)
+BEGIN incluirFuncionario('Ana Souza', 1); END;
+/
+BEGIN incluirFuncionario('Bruno Lima', 1); END;
+/
+BEGIN incluirFuncionario('Carla Mendes', 2); END;
+/
+BEGIN incluirFuncionario('Diego Alves', 3); END;
+/
+BEGIN incluirFuncionario('Eduarda Rocha', 4); END;
+/
+
+-- Dependentes (atualiza numero_dep automaticamente)
+BEGIN incluiDependente('Lucas Souza', 1); END;
+/
+BEGIN incluiDependente('Marina Souza', 1); END;
+/
+BEGIN incluiDependente('Rafael Lima', 2); END;
+/
+BEGIN incluiDependente('Sofia Mendes', 3); END;
+/
+
+-- Participações (atualiza numero_proj e valida limite de 40h)
+BEGIN incluiParticipacao(1, 1, 20); END;
+/
+BEGIN incluiParticipacao(1, 2, 16); END;
+/
+BEGIN incluiParticipacao(2, 1, 24); END;
+/
+BEGIN incluiParticipacao(2, 4, 12); END;
+/
+BEGIN incluiParticipacao(3, 3, 30); END;
+/
+BEGIN incluiParticipacao(4, 4, 28); END;
+/
+BEGIN incluiParticipacao(5, 2, 22); END;
+/
+
+COMMIT;

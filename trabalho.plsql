@@ -325,6 +325,7 @@ BEGIN
     select dataNasc into v_dataNasc from Piloto where codigo = p_codPiloto;
     v_idade :=  floor(months_between(sysdate, v_dataNasc)/12);
     RETURN v_idade;
+        
 END calcular_idade;
 /
 

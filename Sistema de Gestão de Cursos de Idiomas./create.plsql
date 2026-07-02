@@ -74,7 +74,41 @@ begin
     end if;
 end;
 /
-
-
 commit;
+
+
+create or replace function fn_verificaRiscoDesistencia(
+    v_codM in matricula.codigoMatricula%TYPE
+
+)RETURN VARCHAR2
+is
+v_ParcAtrasada Number := 0;
+
+CURSOR c_historico_parcela IS
+    select dataVenc, dataPagto, valor 
+    FROM parcelasCurso
+    WHERE codigoMat = v_codM
+    ORDER BY dataVenc ASC;
+begin 
+
+    for ponteiro in c_historico_parcela LOOP
+        
+        --SYSDATE retorna a data e a hora atuais definidas para o sistema operacional 
+        if ponteiro.dataVenc < SYSDATE AND ponteiro.dataPagto IS NULL THEN
+            v_ParcAtrasada := v_ParcAtrasada + 1;
+
+            if v_ParcAtrasada = 3 THEN
+                RETURN 'RISCO ALTO';
+            END IF;
+
+        ELSE    
+            v_ParcAtrasada := 0;
+        end IF;
+
+    END LOOP;
+    
+    RETURN 'RISCO REGULAR';
+END;
+/
+
 

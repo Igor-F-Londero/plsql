@@ -182,3 +182,37 @@ begin
 end;
 /
 
+
+create or replace procedure pr_TransferirAluno(
+    p_codM in matricula.codigoMatricula%TYPE,
+    p_idTur in turma.idTurma%TYPE
+
+)IS
+BEGIN
+    update matricula set id = p_idTur where codigoMatricula = p_codM;
+
+    commit;
+
+END;
+/
+
+
+create or replace procedure pr_pagaParcela(
+    p_codM in matricula.codigoMatricula%TYPE,
+    p_numParc in parcelasCurso.numeroParcela%TYPE
+)is
+v_data_pgto date;
+begin 
+
+    select dataPagto into v_data_pgto from parcelasCurso
+    where numeroParcela = p_numParc and codigoMat = codigoMatricula;
+
+    if v_data_pgto is not null THEN
+        DBMS_OUTPUT.PUT_LINE('PARCELA JA PAGA');
+    ELSE
+        update parcelasCurso SET dataPagto = SYSDATE(dataPagto);
+    end if;
+
+    COMMIT;
+END;
+/

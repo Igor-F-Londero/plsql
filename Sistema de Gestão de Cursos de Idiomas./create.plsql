@@ -137,3 +137,33 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('ERRO!! ' || SQLERRM);
 END;
 /
+
+create or replace function fn_mediaPonderadaMatricula(
+    p_codM in matricula.codigoMatricula%TYPE
+
+)RETURN NUMBER
+is 
+v_total_parcelas NUMBER :=0 ;
+v_soma_valores NUMBER := 0;
+
+CURSOR c_valor_parcelas IS
+    select valor
+    from parcelasCurso p 
+    where p_codM = p.codigoMat;
+
+BEGIN
+
+    for ponteiro in c_valor_parcelas LOOP
+        v_total_parcelas := v_total_parcelas + 1; 
+        if ponteiro.valor <= 100 THEN
+            v_soma_valores := v_soma_valores + ponteiro.valor;
+        ELSE
+            v_soma_valores :=  v_soma_valores + (ponteiro.valor * 1.2);
+        end IF;
+    end LOOP;
+
+    RETURN v_soma_valores / v_total_parcelas;
+        
+end;
+/
+

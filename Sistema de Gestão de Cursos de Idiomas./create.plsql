@@ -167,3 +167,18 @@ BEGIN
 end;
 /
 
+create or replace procedure pr_AplicarDescontoParcela(
+    p_codM in matricula.codigoMatricula%TYPE,
+    p_numParc in parcelasCurso.NUMEROPARCELA%TYPE,
+    p_porcenParcela NUMBER := 0
+)IS
+begin 
+
+    UPDATE parcelasCurso  SET valor = valor - (valor * (p_porcenParcela / 100))
+    where p_codM = codigoMat
+    AND p_numParc = numeroParcela;
+    
+    commit;
+end;
+/
+

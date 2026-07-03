@@ -83,7 +83,7 @@ create or replace function fn_verificaRiscoDesistencia(
 )RETURN VARCHAR2
 is
 v_ParcAtrasada Number := 0;
-
+--A declaração do cursor é simplesmente um comando SELECT comum, mas que ganha um nome de batismo para que o PL/SQL possa chamá-lo mais tarde.
 CURSOR c_historico_parcela IS
     select dataVenc, dataPagto, valor 
     FROM parcelasCurso
@@ -111,4 +111,29 @@ begin
 END;
 /
 
+create or replace function fn_verificaInatividadeTurma(
+    p_idTur in turma.idTurma%TYPE,
+    v_parcelasAtrasadas in NUMBER
+)return VARCHAR2
+is
+v_duracao_total NUMBER;
+v_duracao_texto VARCHAR2(50);
+begin
 
+    select duracao  into v_duracao_texto from turma t
+    inner join curso c on t.idCurso = c.idCurso where p_idTur = t.idTurma;
+
+    v_duracao_total := TO_NUMBER(v_duracao_texto );
+    
+    for i in 1..v_duracao_total loop
+        if v_parcelasAtrasadas > v_duracao_total / 2 THEN
+            RETURN 'EVASÃO CRÍTICA !';
+        END IF;
+    END LOOP;
+    RETURN 'CONTROLADO !';
+
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('ERRO!! ' || SQLERRM);
+END;
+/

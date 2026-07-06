@@ -197,7 +197,7 @@ END;
 /
 
 
-create or replace procedure pr_pagaParcela(
+/*create or replace procedure pr_pagaParcela(
     p_codM in matricula.codigoMatricula%TYPE,
     p_numParc in parcelasCurso.numeroParcela%TYPE
 )is
@@ -215,4 +215,134 @@ begin
 
     COMMIT;
 END;
+/
+
+*/
+
+create or replace procedure pr_paga_parcela(
+    p_numParc in parcelacurso.numeroParcela%type,
+    p_codM in matricula.codigoMatricula%type
+)is
+v_data_pgto date;
+begin
+
+    select dataPagto into v_data_pgto from parcelacurso
+    where numeroParcela = p_numParc and 
+    codigoMat = p_codM;
+
+    if v_data_pgto is null then
+        update parcelacurso set dataPagto = SYSDATE 
+        where numeroParcela = p_numParc 
+        and codigoMat = p_codM;
+
+        DBMS_OUTPUT.PUT_LINE('Parcela paga com sucesso!');
+    ELSE
+        raise_application_error(-20001,'Parcela já foi paga!');
+    end if;
+end;
+/
+
+
+--Questão 4.1: Cancelamento de Matrícula (Operação DELETE)
+--Enunciado: Crie uma procedure chamada pr_CancelarMatricula que receba apenas o código da matrícula (p_codMatricula).
+create or replace procedure pr_CancelarMatricula(
+    p_codM in matricula.codigoMatricula%type
+)is
+begin 
+    
+    delete from parcelascurso where codigoMat = p_codM;
+
+    delete from matricula where codigoMatricula = p_codM;
+    commit;
+
+    DBMS_OUTPUT.PUT_LINE('Aluno excluido!');
+
+end;
+/
+
+
+/* 
+Questão 4.2: Atualização de Vagas Manual (Operação com Condicional)
+
+    Contexto de Projeto: A coordenação pedagógica quer uma rotina para alterar manualmente o limite de vagas de uma turma, mas com uma trava de segurança: nenhuma turma de idioma pode ter menos de 5 vagas e nem mais de 15 vagas por questões de qualidade de ensino.
+
+    Enunciado: Crie uma procedure chamada pr_AlterarLimiteVagas que receba o ID da turma (p_idTurma) e a nova quantidade de vagas desejada (p_novasVagas).
+ */
+create or replace procedure pr_AlterarLimiteVagas(
+    p_idTurma in turma.idTurma%type,
+    p_novasVagas in number
+)is 
+begin 
+    if p_novasVagas > 15 or p_novasVagas < 5 then
+        raise_application_error(-20001, 'Erro: quantidade de vagas invalida, não deve ter menos de 5 ou mais de 15 vagas disponiveis!.');
+    else
+        update turma set nrVagas = p_novasVagas where idTurma = p_idTurma;
+    end if;
+
+exception
+    when OTHERS then
+        raise_application_error(-20003, 'ERROR ' || SQLERRM);
+end;
+/
+
+
+/*
+A Anatomia de uma Trigger (As 4 Perguntas)
+
+Sempre que ler um enunciado de Trigger, monte o topo dela respondendo a isto:
+
+    QUANDO o alarme deve disparar?
+
+        Antes da ação acontecer (BEFORE) ou depois que ela já salvou no banco (AFTER)?
+
+        Para a Questão 7: Como queremos impedir que uma parcela paga seja excluída, o alarme tem que tocar antes (BEFORE) da exclusão acontecer.
+
+    QUAL É A AÇÃO que dispara o sensor?
+
+        É uma inserção (INSERT), alteração (UPDATE) ou exclusão (DELETE)?
+
+        Para a Questão 7: O enunciado fala em "impedir a exclusão", logo, o evento é DELETE.
+
+    ONDE o sensor está instalado?
+
+        Qual é a tabela que está sendo vigiada?
+
+        Para a Questão 7: O sensor fica na tabela parcelasCurso.
+
+    COMO o alarme deve analisar os dados?
+
+        Ele deve olhar o comando como um todo ou deve olhar cada linha que está sendo afetada, uma por uma?
+
+        Para a Questão 7: Como o usuário pode tentar apagar 5 parcelas de uma vez e precisamos validar o estado de cada boleto individualmente, usamos a cláusula padrão FOR EACH ROW (Para Cada Linha).    
+
+
+    :NEW: Guarda os dados novos que estão tentando entrar no banco (só existe no INSERT e UPDATE).
+    :OLD: Guarda os dados antigos que já estavam salvos na tabela antes da pessoa mexer (existe no UPDATE e DELETE).
+
+*/
+create or replace trigger impedeExclusao --NOME do trigger
+before --QUANDO o alarme deve disparar? Antes da ação acontecer (BEFORE) ou depois que ela já salvou no banco (AFTER)?
+delete --QUAL É A AÇÃO que dispara o sensor? É uma inserção (INSERT), alteração (UPDATE) ou exclusão (DELETE)?   
+on parcelasCurso --ONDE o sensor está instalado? Qual é a tabela que está sendo vigiada?
+for each row -- COMO o alarme deve analisar os dados? Ele deve olhar o comando como um todo ou deve olhar cada linha que está sendo afetada, uma por uma?
+begin
+    
+    if :OLD.dataPagto is not null then
+        raise_application_error(-20001, 'ERROR: Parcela ja foi paga, não pode ser excluida!!');
+    end if;
+end;
+/
+
+
+create or replace trigger cpfAluno
+before
+insert
+on Aluno
+for each row
+begin
+
+    if length(:NEW.cpf) != 11 then
+        raise_application_error(-20001, 'ERROR: O cpf não deve possuir mais de 11 caracteres');
+    end if;
+end;
 /

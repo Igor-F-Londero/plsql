@@ -75,3 +75,35 @@ begin
 
 end;
 /
+
+
+/*
+
+Média Ponderada de Gastos por Tipo de Veículo (Cursor + Loop)
+*/
+
+
+create or replace function fn_MediaPonderadaTipo(
+    p_tipoVeiculo in veiculo.tipo%type
+)return number
+is
+v_registros number := 0;
+v_soma_valores number := 0;
+cursor c_valor_total is
+    select valorTotal
+    from veiculo v
+    inner join registro_estacionamento r 
+    on v.placa = r.placaVeiculo
+    where v.tipo = p_tipoVeiculo;
+begin
+    for ponteiro in c_valor_total loop
+        v_registros := v_registros + 1;
+        if p_tipoVeiculo = 'SUV' then
+            v_soma_valores := v_soma_valores +(ponteiro.valorTotal *1.5);
+        else
+            v_soma_valores := v_soma_valores + ponteiro.valorTotal;
+        end if;
+    end loop;
+    return v_soma_valores / v_registros;
+end;
+/

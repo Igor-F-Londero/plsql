@@ -137,7 +137,7 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('ERRO!! ' || SQLERRM);
 END;
 /
-
+--Media Ponderada com CURSOR
 create or replace function fn_mediaPonderadaMatricula(
     p_codM in matricula.codigoMatricula%TYPE
 

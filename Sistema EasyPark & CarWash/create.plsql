@@ -179,3 +179,24 @@ begin
 end;
 /
 
+create or replace trigger vagaErrada
+before
+insert
+on registro_estacionamento 
+for each row
+declare
+    v_tipo_vaga varchar2(20);
+    v_tipo_veiculo varchar2(20);
+begin
+
+    select tipoVaga into v_tipo_vaga from vaga v
+    where v.idVaga = :new.idVaga;
+    
+    select tipo into v_tipo_vaga from veiculo
+    where placa = :new.placaVeiculo;
+
+    if v_tipo_veiculo != v_tipo_vaga then
+        raise_application_error(-20001, 'ERRO: Seu veiculo não pode ser alocado nessa vaga!' || SQLERRM);
+    end if;
+end;
+/

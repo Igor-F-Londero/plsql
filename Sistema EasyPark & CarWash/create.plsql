@@ -107,3 +107,75 @@ begin
     return v_soma_valores / v_registros;
 end;
 /
+
+
+--INSERT
+create or replace procedure pr_RegistraEntrada(
+    p_Placa in veiculo.placa%type,
+    p_Registro in registro_estacionamento.idRegistro%type,
+    p_Vaga in vaga.idVaga%type
+)is
+begin
+
+    insert into registro_estacionamento(idRegistro,placaVeiculo,idVaga,dataEntrada,valorTotal)
+    values(p_Registro,p_Placa,p_Vaga,sysdate,0);
+    commit;
+end;
+/
+
+--UPDATE
+create or replace procedure pr_ConcluirLavagem(
+    p_idServico in servico_lavagem.idServico%type
+)is
+v_status_servico varchar2(20);
+begin
+
+    select statusServico into v_status_servico from servico_lavagem s 
+    where p_idServico = s.idServico;
+
+    if v_status_servico != 'CONCLUIDO'then
+        update servico_lavagem s set statusServico = 'CONCLUIDO'
+        where p_idServico = s.idServico;
+    else
+        raise_application_error(-20001,'ERRO: O serviço ja está com o status concluido... Operação cancelada!');
+    end if;
+    commit;
+exception
+    when others then
+        raise_application_error(-20002, 'ERRO ' || SQLERRM);
+end;
+/
+
+
+create or replace procedure pr_RegistraSaida(
+    p_Registro in registro_estacionamento.idRegistro%type,
+    p_valorHora in NUMBER
+)is
+v_data_entrada date;
+begin
+    select dataEntrada into v_data_entrada from registro_estacionamento r
+    where p_Registro = r.idRegistro;
+
+
+    update registro_estacionamento r set dataSaida = sysdate,
+    valorTotal = p_valorHora *(sysdate - v_data_entrada) * 24
+    where p_Registro = r.idRegistro;
+    commit;
+
+end;
+/
+
+
+create or replace trigger registraEstacionamento
+after 
+insert
+on registro_estacionamento
+for each row
+begin
+    
+    update vaga set status = 'OCUPADA'
+    where idVaga = :new.idVaga;
+
+end;
+/
+

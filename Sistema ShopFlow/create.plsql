@@ -46,7 +46,7 @@ create or replace procedure pr_CriarPedido(
     p_idPedido in pedido.id_ped%type,
     p_idCliente in cliente.id_cli%type
 )is
-v_statusCliente varchar2;
+v_statusCliente varchar2(50);
 begin
 
     select status_cliente  into v_statusCliente 
@@ -59,7 +59,6 @@ begin
         insert into edido(id_ped, id_cli, data_pedido,total_pedido)
         values (p_idPedido,p_idCliente,sysdate,0);
     end if;
-commit;
 end;
 /
 

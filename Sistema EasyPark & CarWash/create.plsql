@@ -200,3 +200,24 @@ begin
     end if;
 end;
 /
+
+create or replace trigger protejeplaca
+before
+update
+on registro_estacionamento
+for each row
+declare
+v_data_saida date;
+begin
+
+
+    
+    if :old.placaVeiculo != :new.placaVeiculo then 
+        if :old.dataSaida is null then
+            raise_application_error(-20001, 'A placa não pode ser alterada pois o veiculo ainda esta no patio!');
+        end if;
+
+    end if;
+end;
+/
+    

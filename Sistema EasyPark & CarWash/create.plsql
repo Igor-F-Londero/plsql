@@ -209,9 +209,6 @@ for each row
 declare
 v_data_saida date;
 begin
-
-
-    
     if :old.placaVeiculo != :new.placaVeiculo then 
         if :old.dataSaida is null then
             raise_application_error(-20001, 'A placa não pode ser alterada pois o veiculo ainda esta no patio!');
@@ -220,4 +217,5 @@ begin
     end if;
 end;
 /
-    
+commit;
+

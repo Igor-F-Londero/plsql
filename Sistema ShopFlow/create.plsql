@@ -46,7 +46,7 @@ create or replace procedure pr_CriarPedido(
     p_idPedido in pedido.id_ped%type,
     p_idCliente in cliente.id_cli%type
 )is
-v_statusCliente varchar2;
+v_statusCliente varchar2(20);
 begin
 
     select status_cliente  into v_statusCliente 
@@ -56,10 +56,9 @@ begin
     if v_statusCliente = 'BLOQUEADO' then
         raise_application_error(-20001, 'ERRO:  Cliente bloqueado');
     else
-        insert into edido(id_ped, id_cli, data_pedido,total_pedido)
+        insert into pedido(id_ped, id_cli, data_pedido,total_pedido)
         values (p_idPedido,p_idCliente,sysdate,0);
     end if;
-commit;
 end;
 /
 

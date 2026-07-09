@@ -87,14 +87,44 @@ end;
 
 
 create or replace trigger tg_faturarPedido
-before
+after
 update
 on pedido
 for each row
 declare
     cursor c_itemPedido is
-        select i
-        from  i 
-        where i.id_prod =
+        select id_prod, quantidade
+        from  item_pedido
+        where i.id_ped = :new.id_ped;
+begin
 
+    if :new.status_pedido = 'FATURADO' then
+            for ponteiro in c_itemPedido loop
+                update produto p
+                set qtd_estoque = qtd_estoque - ponteiro.quantidade
+                where ponteiro.id_prod = :new.id_prod;
+            end loop;
+    end if;
+end;
+/
+
+
+
+create or replace trigger tg_Validasubtotal
+before
+insert
+on item_pedido
+for each row
+declare
+v_preco_un number(8,2) :=00.00;
+begin
+
+    select preco_unitario into v_preco_un
+    from produto p where id_prod = :new.id_prod;
+
+    :new.subtotal :=  v_preco_un * :new.quantidade;
+
+
+end;
+/
 

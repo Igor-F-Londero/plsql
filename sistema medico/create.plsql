@@ -251,3 +251,26 @@ begin
 
 end;
 /
+
+
+create or replace procedure fn_MudaStatusConsulta(
+    p_Agenda in agendamentos.id_agenda%type,
+    p_status in agendamentos.status_consulta%type
+)
+is
+    v_resultado agendamentos.status_consulta%type;
+begin
+
+select status_consulta into v_resultado 
+from agendamentos a
+where a.id_agenda = p_Agenda;
+
+if v_resultado ='CANCELADA' then
+    raise_application_error(-20001,'Consultas canceladas não podem ser alteradas');
+end if;
+
+update agendamentos a set status_consulta = p_status
+where a.id_agenda = p_Agenda;
+
+end;
+/
